@@ -2,7 +2,7 @@ import { AirVent, ArrowUpDown, Fan, Flame, Minus, Plus, Snowflake, X } from '../
 import M3Slider from '../components/ui/M3Slider';
 import ModernDropdown from '../components/ui/ModernDropdown';
 import { useConfig, useHomeAssistantMeta } from '../contexts';
-import { formatKindValueForDisplay, getEffectiveUnitMode } from '../utils';
+import { formatKindValueForDisplay, getEffectiveUnitMode, getTargetTemperature, buildSetTemperatureData } from '../utils';
 
 const getDisplayName = (entity, fallback) => entity?.attributes?.friendly_name || fallback;
 
@@ -26,7 +26,7 @@ export default function GenericClimateModal({
   const isHeating = hvacAction === 'heating';
   const clTheme = isCooling ? 'blue' : isHeating ? 'orange' : 'gray';
   const currentTemp = entity.attributes?.current_temperature;
-  const targetTemp = entity.attributes?.temperature;
+  const targetTemp = getTargetTemperature(entity);
   const sourceTempUnit = haConfig?.unit_system?.temperature || entity.attributes?.temperature_unit || '°C';
   const effectiveUnitMode = getEffectiveUnitMode(unitsMode, haConfig);
   const displayCurrentTemp = formatKindValueForDisplay(currentTemp, {
@@ -110,13 +110,13 @@ export default function GenericClimateModal({
                   <span className="text-5xl font-medium leading-none mt-10 italic text-gray-700">{displayTempUnit}</span>
                 </div>
                 <div className="flex items-center gap-8 px-4">
-                  <button onClick={() => callService('climate', 'set_temperature', { entity_id: entityId, temperature: tempValue - 0.5 })} className="p-6 rounded-full transition-all active:scale-90 shadow-lg border" style={{ backgroundColor: 'var(--glass-bg)', borderColor: 'var(--glass-border)' }}>
+                  <button onClick={() => callService('climate', 'set_temperature', buildSetTemperatureData(entity, entityId, tempValue - 0.5))} className="p-6 rounded-full transition-all active:scale-90 shadow-lg border" style={{ backgroundColor: 'var(--glass-bg)', borderColor: 'var(--glass-border)' }}>
                     <Minus className="w-8 h-8" style={{ strokeWidth: 3 }} />
                   </button>
                   <div className="flex-grow font-sans">
-                    <M3Slider min={minTemp} max={maxTemp} step={0.5} value={tempValue} onChange={(e) => callService('climate', 'set_temperature', { entity_id: entityId, temperature: parseFloat(e.target.value) })} colorClass={isCooling ? 'bg-[var(--accent-color)]' : isHeating ? 'bg-orange-500' : 'bg-white/20'} />
+                    <M3Slider min={minTemp} max={maxTemp} step={0.5} value={tempValue} onChange={(e) => callService('climate', 'set_temperature', buildSetTemperatureData(entity, entityId, parseFloat(e.target.value)))} colorClass={isCooling ? 'bg-[var(--accent-color)]' : isHeating ? 'bg-orange-500' : 'bg-white/20'} />
                   </div>
-                  <button onClick={() => callService('climate', 'set_temperature', { entity_id: entityId, temperature: tempValue + 0.5 })} className="p-6 rounded-full transition-all active:scale-90 shadow-lg border" style={{ backgroundColor: 'var(--glass-bg)', borderColor: 'var(--glass-border)' }}>
+                  <button onClick={() => callService('climate', 'set_temperature', buildSetTemperatureData(entity, entityId, tempValue + 0.5))} className="p-6 rounded-full transition-all active:scale-90 shadow-lg border" style={{ backgroundColor: 'var(--glass-bg)', borderColor: 'var(--glass-border)' }}>
                     <Plus className="w-8 h-8" style={{ strokeWidth: 3 }} />
                   </button>
                 </div>

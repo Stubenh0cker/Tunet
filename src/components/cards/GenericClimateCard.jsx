@@ -1,7 +1,7 @@
 import { Minus, Plus, AirVent, Fan } from 'lucide-react';
 import { getIconComponent } from '../../icons';
 import { useConfig, useHomeAssistantMeta } from '../../contexts';
-import { formatKindValueForDisplay, getEffectiveUnitMode } from '../../utils';
+import { formatKindValueForDisplay, getEffectiveUnitMode, getTargetTemperature } from '../../utils';
 
 const isCoolingState = (entity) => {
   const action = entity?.attributes?.hvac_action;
@@ -35,7 +35,7 @@ export default function GenericClimateCard({
 
   const isSmall = settings?.size === 'small';
   const currentTemp = entity.attributes?.current_temperature ?? '--';
-  const targetTemp = entity.attributes?.temperature ?? '--';
+  const targetTemp = getTargetTemperature(entity) ?? '--';
   const sourceTempUnit = haConfig?.unit_system?.temperature || entity.attributes?.temperature_unit || '°C';
   const effectiveUnitMode = getEffectiveUnitMode(unitsMode, haConfig);
   const displayCurrentTemp = formatKindValueForDisplay(currentTemp, {
