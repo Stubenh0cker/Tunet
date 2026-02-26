@@ -34,6 +34,7 @@ import {
 import { Activity, Hash, ToggleRight, Power, Workflow } from '../icons';
 import { getIconComponent } from '../icons';
 import { getLocaleForLanguage } from '../i18n';
+import { buildSetTemperatureData } from '../utils';
 
 function renderMissingEntityWhenReady(ctx, props) {
   if (!ctx?.entitiesMissingReady) return null;
@@ -286,7 +287,7 @@ export function renderGenericClimateCard(cardId, dragProps, getControls, cardSty
       customNames={customNames}
       customIcons={customIcons}
       onOpen={() => setActiveClimateEntityModal(entityId)}
-      onSetTemperature={(temp) => callService('climate', 'set_temperature', { entity_id: entityId, temperature: temp })}
+      onSetTemperature={(temp) => callService('climate', 'set_temperature', buildSetTemperatureData(entity, entityId, temp))}
       settings={settings}
       t={t}
     />

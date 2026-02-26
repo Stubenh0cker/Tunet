@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useRef, useEffect, useCallback } from 'react';
 import { Home, Sun, ChevronUp, ChevronDown } from 'lucide-react';
 import { getIconComponent } from '../../icons';
+import { getTargetTemperature, buildSetTemperatureData } from '../../utils';
 
 const SLIDER_DEBOUNCE_MS = 200;
 
@@ -92,7 +93,7 @@ export default function RoomCard({
   }, [currentTemp]);
 
   const displayTemp = stableTemp ?? currentTemp;
-  const targetTemp = climateEntity?.attributes?.temperature;
+  const targetTemp = getTargetTemperature(climateEntity);
   const isOccupied = motionEntity?.state === 'on';
   const displayHumidity = useMemo(() => {
     if (!humidityEntity) return null;
@@ -196,7 +197,7 @@ export default function RoomCard({
     if (!climateId || !conn) return;
     const current = targetTemp || 20;
     const newTemp = current + step;
-    callService('climate', 'set_temperature', { entity_id: climateId, temperature: newTemp });
+    callService('climate', 'set_temperature', buildSetTemperatureData(climateEntity, climateId, newTemp));
   };
 
 
